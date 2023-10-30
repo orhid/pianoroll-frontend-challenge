@@ -43,8 +43,8 @@ class PianoRollDisplay {
     if (!this.data) await this.loadPianoRollData();
     if (!this.data) return;
     
-    const pianoRollContainer = document.getElementById('pianoRollContainer');
-    pianoRollContainer.innerHTML = '';
+    const pianoRollGrid = document.getElementById('pianoRollGrid');
+    pianoRollGrid.innerHTML = '';
     for (let it = 0; it < 20; it++) {
       const start = it * 60;
       const end = start + 60;
@@ -52,7 +52,7 @@ class PianoRollDisplay {
 
       const { cardDiv, svg } = this.preparePianoRollCard(it)
 
-      pianoRollContainer.appendChild(cardDiv);
+      pianoRollGrid.appendChild(cardDiv);
       const roll = new PianoRoll(svg, partData);
     }
   }

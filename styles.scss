@@ -1,3 +1,10 @@
+// # vars
+
+$u: 12px; // main grid unit
+$nav-height: 3.5 * $u;
+
+// # master
+
 * {
   margin: 0;
   padding: 0;
@@ -11,11 +18,13 @@ body {
   color: #1C1C1A;
   height: 100vh; /* Use viewport height instead of 100% to occupy full screen height */
   text-align: center;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
 }
+
+// # navbar
 
 .navbar {
   display: flex;
@@ -26,21 +35,12 @@ body {
 }
 
 .logo-container img {
-  height: 40px;
+  height: $nav-height;
   width: auto;
   fill: white;
 }
 
-#pianoRollContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-h1 {
-  margin-bottom: 20px;
-  font-size: 42px;
-}
+// # load button
 
 button {
   padding: 15px 25px;
@@ -67,16 +67,59 @@ button {
   justify-content: center;
 }
 
+// # piano roll container
+
+#pianoRollContainer {
+  width: auto; height: auto;
+  display: flex;
+  flex-flow: row wrap;
+  justify-items: flex-start;
+  align-items: flex-start;
+}
+
+// # piano roll spotlight
+
+#pianoRollSpotlight {
+  max-width: 0px;
+  height: 0px;
+  flex-basis: 42 * $u;
+  flex-grow: 2;
+
+  &:has(.piano-roll-card) {
+    max-width: 100vw;
+    height: 24 * $u;
+    margin-right: 2 * $u;
+  }
+}
+
+// # piano roll grid
+
+#pianoRollGrid {
+  height: calc(100vh - $nav-height);
+  overflow: auto;
+
+  flex-basis: 32*$u;
+  flex-grow: 1;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+// # piano roll card
+
 .piano-roll-svg {
   border: 2px solid #381815;
 }
 
 .piano-roll-card {
   border: 1px solid #ccc;
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
   padding: 10px;
-  width: 50%;
+  flex-basis: 32*$u;
+  flex-grow: 1;
   box-sizing: border-box;
+
 }
 
 .description {
