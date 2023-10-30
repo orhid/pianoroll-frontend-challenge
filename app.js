@@ -1,5 +1,21 @@
 import PianoRoll from './pianoroll.js';
 
+const pianoRollSpotlight = document.getElementById('pianoRollSpotlight');
+const pianoRollGrid = document.getElementById('pianoRollGrid');
+
+function putMeInSpotlight() {
+  // remove previous piano roll from spotlight, if any
+  while (pianoRollSpotlight.firstChild) {
+    const child = pianoRollSpotlight.firstChild;
+    child.addEventListener('click', putMeInSpotlight);
+    pianoRollSpotlight.removeChild(child);
+    pianoRollGrid.appendChild(child);
+  }
+
+  this.removeEventListener('click', putMeInSpotlight);
+  pianoRollSpotlight.appendChild(this);
+}
+
 class PianoRollDisplay {
   constructor(csvURL) {
     this.csvURL = csvURL;
@@ -36,6 +52,9 @@ class PianoRollDisplay {
     // Append the SVG to the card container
     cardDiv.appendChild(svg);
 
+    // add event listener for spotlight
+    cardDiv.addEventListener('click', putMeInSpotlight);
+
     return { cardDiv, svg }
   }
 
@@ -43,7 +62,6 @@ class PianoRollDisplay {
     if (!this.data) await this.loadPianoRollData();
     if (!this.data) return;
     
-    const pianoRollGrid = document.getElementById('pianoRollGrid');
     pianoRollGrid.innerHTML = '';
     for (let it = 0; it < 20; it++) {
       const start = it * 60;
@@ -58,7 +76,8 @@ class PianoRollDisplay {
   }
 }
 
-document.getElementById('loadCSV').addEventListener('click', async () => {
+document.getElementById('loadCSV').addEventListener('click', async function() {
   const csvToSVG = new PianoRollDisplay();
   await csvToSVG.generateSVGs();
+  this.style.display = 'none';
 });
