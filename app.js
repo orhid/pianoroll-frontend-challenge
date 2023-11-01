@@ -17,7 +17,7 @@ function putMeInSpotlight() {
   while (pianoRollSpotlight.firstChild) {
     const child = pianoRollSpotlight.firstChild;
     child.addEventListener('click', putMeInSpotlight);
-    child.removeChild(document.getElementById('selections'));
+    child.firstChild.removeChild(document.getElementById('selections'));
     pianoRollSpotlight.removeChild(child);
     pianoRollGrid.appendChild(child);
   }
@@ -29,13 +29,14 @@ function putMeInSpotlight() {
   // create canvas for selection feature
   canvas = document.createElement('canvas');
   context = canvas.getContext('2d');
+  selections = []; // clear selections from previous selection
 
   canvas.id = 'selections';
   canvas.addEventListener('mouseup', endSelection);
   canvas.addEventListener('mousedown', startSelection);
   canvas.addEventListener('mousemove', drawMove);
 
-  this.appendChild(canvas);
+  this.firstChild.appendChild(canvas);
 }
 
 // using 'evnt' since 'event' is a keyword
@@ -63,7 +64,7 @@ function drawMove(evnt) {
   if (start.x) {
     draw()
     let { x, y } = getMousePosition(canvas, evnt)
-    context.fillStyle = 'rgba(255, 192, 0, 0.72)';
+    context.fillStyle = 'rgba(148, 64, 56, 0.72)';
     context.fillRect(start.x, 0, x - start.x, canvas.height);
   }
 }
@@ -71,7 +72,7 @@ function drawMove(evnt) {
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   selections.forEach(rect => {
-    context.fillStyle = 'rgba(255, 192, 0, 0.54)';
+    context.fillStyle = 'rgba(148, 64, 56, 0.48)';
     context.fillRect(rect.x, rect.y, rect.width, rect.height);
   }); 
 }
@@ -99,20 +100,25 @@ class PianoRollDisplay {
   preparePianoRollCard(rollId) {
     const cardDiv = document.createElement('div');
     cardDiv.classList.add('piano-roll-card');
+    cardDiv.style.order = `${rollId}`;
 
     // Create and append other elements to the card container as needed
+
+    // create container for svg and canvas to hack overlay
+    const canvasAndSVGContainerDiv = document.createElement('div');
+    canvasAndSVGContainerDiv.classList.add('canvas-and-svg-container-hack');
+    cardDiv.appendChild(canvasAndSVGContainerDiv);
+
+    // create and append the SVG to the card container
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('piano-roll-svg');
+    canvasAndSVGContainerDiv.appendChild(svg);
+
+    // create and append the description to the card container
     const descriptionDiv = document.createElement('div');
     descriptionDiv.classList.add('description');
     descriptionDiv.textContent = `This is a piano roll number ${rollId}`;
     cardDiv.appendChild(descriptionDiv);
-
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.classList.add('piano-roll-svg');
-    svg.setAttribute('width', '80%');
-    svg.setAttribute('height', '150');
-
-    // Append the SVG to the card container
-    cardDiv.appendChild(svg);
 
     // add event listener for spotlight
     cardDiv.addEventListener('click', putMeInSpotlight);
@@ -143,6 +149,3 @@ document.getElementById('loadCSV').addEventListener('click', async function() {
   await csvToSVG.generateSVGs();
   this.style.display = 'none';
 });
-
-// draw()
-
