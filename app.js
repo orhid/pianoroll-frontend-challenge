@@ -48,6 +48,25 @@ function getMousePosition(canvas, evnt) {
   };
 }
 
+function sortEndPoints(start, now, width) {
+  if (start < now) {
+    return { left: start/width, right: now/width }
+  } else {
+    return { left: now/width, right: start/width }
+  }
+}
+
+function countNotesInside(ends) {
+  return Array.from(pianoRollSpotlight.getElementsByClassName('note-rectangle')).filter((note) => { 
+    let noteEnds = {
+      left: note.x.baseVal.value,
+      right: note.x.baseVal.value + note.width.baseVal.value
+    };
+    // this assumes left < right
+    return noteEnds.left > ends.left && noteEnds.right < ends.right 
+  }).length;
+}
+
 function startSelection(evnt) {
   start = getMousePosition(canvas, evnt);
 }
@@ -55,7 +74,10 @@ function startSelection(evnt) {
 function endSelection(evnt) {
   let { x, y } = getMousePosition(canvas, evnt);
   selections.push({x: start.x, y: 0, width: x - start.x, height: canvas.height});
-  console.log(start.x, x-start.x); // print output
+
+  let ends = sortEndPoints(start.x, x, canvas.width);
+  console.log(ends.left, ends.right, countNotesInside(ends)); // print endpoints and number of notes fully inside selection
+
   start = {};
   draw();
 }
