@@ -16,14 +16,14 @@ function putMeInSpotlight() {
   // remove previous piano roll from spotlight, if any
   while (pianoRollSpotlight.firstChild) {
     const child = pianoRollSpotlight.firstChild;
-    child.addEventListener('click', putMeInSpotlight);
+    child.addEventListener('click', putMeInSpotlight); // this needs to be clickable again
     child.firstChild.removeChild(document.getElementById('selections'));
     pianoRollSpotlight.removeChild(child);
     pianoRollGrid.appendChild(child);
   }
 
   // apend to spotlight
-  this.removeEventListener('click', putMeInSpotlight);
+  this.removeEventListener('click', putMeInSpotlight); // clicking this one should not be possible anymore
   pianoRollSpotlight.appendChild(this);
 
   // create canvas for selection feature
@@ -40,6 +40,7 @@ function putMeInSpotlight() {
 }
 
 // using 'evnt' since 'event' is a keyword
+/// this translates the mouse position into the coordinate space of the canvas
 function getMousePosition(canvas, evnt) { 
   let selection = canvas.getBoundingClientRect();
   return {
@@ -48,6 +49,9 @@ function getMousePosition(canvas, evnt) {
   };
 }
 
+/// in addition to sorting the endpoints
+/// this also normalises them into the [0,1] range
+/// since that is what the piano roll uses
 function sortEndPoints(start, now, width) {
   if (start < now) {
     return { left: start/width, right: now/width }
@@ -82,6 +86,7 @@ function endSelection(evnt) {
   draw();
 }
 
+/// draw the currently selected area
 function drawMove(evnt) {
   if (start.x) {
     draw()
@@ -91,6 +96,7 @@ function drawMove(evnt) {
   }
 }
 
+/// draw all the areas selected previously
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   selections.forEach(rect => {
@@ -122,7 +128,7 @@ class PianoRollDisplay {
   preparePianoRollCard(rollId) {
     const cardDiv = document.createElement('div');
     cardDiv.classList.add('piano-roll-card');
-    cardDiv.style.order = `${rollId}`;
+    cardDiv.style.order = `${rollId}`; // this will preserve ordering after swithing out of spotlight
 
     // Create and append other elements to the card container as needed
 
@@ -137,6 +143,7 @@ class PianoRollDisplay {
     canvasAndSVGContainerDiv.appendChild(svg);
 
     // create and append the description to the card container
+    // i moved it below the roll, i thought it looks nicer
     const descriptionDiv = document.createElement('div');
     descriptionDiv.classList.add('description');
     descriptionDiv.textContent = `This is a piano roll number ${rollId}`;
@@ -169,5 +176,5 @@ class PianoRollDisplay {
 document.getElementById('loadCSV').addEventListener('click', async function() {
   const csvToSVG = new PianoRollDisplay();
   await csvToSVG.generateSVGs();
-  this.style.display = 'none';
+  this.style.display = 'none'; // remove button after loading rolls, for presentation reasons
 });
